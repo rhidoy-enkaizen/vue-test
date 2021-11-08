@@ -1,13 +1,21 @@
 <template>
     <div>
-        <div>
-            <span v-show="message">Please select {{ message }}</span>
+        <!--        <div v-show="errors" class="alert alert-danger" role="alert">-->
+        <!--            Please select {{ message }}-->
+        <!--        </div>-->
+        <div v-if="errors.length">
+            <b>Please correct the following error(s):</b>
+            <ul>
+                <li v-for="error in errors" :key="error">{{error}}</li>
+            </ul>
         </div>
-        <select v-model="day" @change="onChange($event)">
+        <label for="day">Day</label>
+        <select id="day" v-model="day" @change="onChange($event)" :disabled="disabled">
             <option disabled value="">Select Day</option>
             <option v-for="n in 31" :key="n">{{n}}</option>
         </select>
-        <select v-model="month" @change="onChange($event)">
+        <label for="month">Day</label>
+        <select id="month" v-model="month" @change="onChange($event)" :disabled="disabled">
             <option disabled value="">Select Month</option>
             <option>January</option>
             <option>February</option>
@@ -22,7 +30,8 @@
             <option>November</option>
             <option>December</option>
         </select>
-        <select v-model="year" @change="onChange($event)">
+        <label for="year">Day</label>
+        <select id="year" v-model="year" @change="onChange($event)" :disabled="disabled">
             <option disabled value="">Select Year</option>
             <option v-for="year in years" :key="year">{{year}}</option>
         </select>
@@ -33,12 +42,13 @@
     export default {
         name: "DatePicker",
         props: {
-            dateTime: String
+            dateTime: String,
+            disabled: Boolean
         },
         watch: {
             dateTime: function (newVal) { // watch it
                 //remove message
-                this.message = '';
+                this.errors = [];
                 //set data
                 const array = newVal.split(' ');
                 this.day = array[0];
@@ -51,7 +61,7 @@
                 day: '',
                 month: '',
                 year: '',
-                message: '',
+                errors: [],
                 years: []
             };
         },
@@ -67,18 +77,19 @@
         },
         methods: {
             onChange() {
-                if (!this.day)
-                    this.message = 'day';
-                else if (!this.month)
-                    this.message = 'month';
-                else if (!this.year)
-                    this.message = 'year';
-                else {
-                    this.message = '';
+                this.errors = [];
+                if (this.day && this.month && this.year) {
                     //format day time
                     const dateTime = this.day + ' ' + this.month + ' ' + this.year;
                     this.$emit('onSelect', dateTime)
+                    return;
                 }
+                if (!this.day)
+                    this.errors.push('Day field required.');
+                if (!this.month)
+                    this.errors.push('Month field required.');
+                if (!this.year)
+                    this.errors.push('Year field required.');
             }
         }
     }

@@ -2,7 +2,7 @@
     <div id="app">
         <img alt="Vue logo" src="./assets/logo.png">
         <DatePicker @onSelect="onSelect($event)"/>
-        <DatePicker :dateTime="dateTime"/>
+        <DatePicker :dateTime="dateTime" :disabled="true"/>
     </div>
 </template>
 
